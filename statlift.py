@@ -38,23 +38,6 @@ if __name__ == "__main__":
     )
     st.title("LiftWise - Free Analytics for Hevy Data :rocket:")
 
-    GA_TRACKING_ID = st.secrets["google_analytics"]["tracking_id"]
-
-    # Inject Google Analytics script using the retrieved tracking ID
-    ga_script = f"""
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){{dataLayer.push(arguments);}}
-    gtag('js', new Date());
-
-    gtag('config', '{GA_TRACKING_ID}');
-    </script>
-    """
-
-    # Add the script to your Streamlit app
-    st.markdown(ga_script, unsafe_allow_html=True)
-
     # initialize workout data handler
     sepump = SePump()
 
