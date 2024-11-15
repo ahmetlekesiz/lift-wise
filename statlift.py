@@ -245,8 +245,76 @@ if __name__ == "__main__":
         chart += chart.transform_regression('date', metric_to_column_workout[metric]).mark_line(color="red")
         col.altair_chart(chart, use_container_width=True)
 
+    ###########################################################################
+    # 4. Combined Exercise and Workout filtering
+    ###########################################################################
+
+    st.divider()
+    st.write("## 🔍 Filter by Exercise and Workout:")
+    
+    # Create two columns for the filters
+    filter_col1, filter_col2 = st.columns(2)
+    
+    # Exercise filter
+    selected_exercise = filter_col1.selectbox(
+        "**Select exercise**",
+        ["All"] + list(pd.unique(st.session_state["data"][st.session_state["columns"]["EXERCISE_NAME"]])),
+        key="combined_exercise_filter"
+    )
+    
+    # Workout filter
+    selected_workout = filter_col2.selectbox(
+        "**Select workout routine**",
+        ["All"] + list(pd.unique(st.session_state["data"][st.session_state["columns"]["WORKOUT_NAME"]])),
+        key="combined_workout_filter"
+    )
+
+    # Filter the data based on selections
+    filtered_data = st.session_state["data"].copy()
+    if selected_exercise != "All":
+        filtered_data = filtered_data[filtered_data[st.session_state["columns"]["EXERCISE_NAME"]] == selected_exercise]
+    if selected_workout != "All":
+        filtered_data = filtered_data[filtered_data[st.session_state["columns"]["WORKOUT_NAME"]] == selected_workout]
+
+    # Show metrics for filtered data
+    if len(filtered_data) > 0:
+        v_space(1)
+        st.write("##### :bar_chart: Metrics for filtered data:")
+        show_total_stats(filtered_data)
+
+        # Add graphs for filtered data
+        v_space(1)
+        st.write("##### :chart_with_upwards_trend: Graphs for filtered data:")
+        
+        # Prepare aggregated data for graphs
+        date_col = st.session_state["columns"]["DATE"]  # Get the correct date column name
+        filtered_data_agg = filtered_data.groupby(date_col).agg({
+            "volume": "sum",
+            st.session_state["columns"]["REPS"]: "sum"
+        }).reset_index()
+        filtered_data_agg.columns = ["date", "total_volume", "total_reps"]
+
+        metric_to_column_filtered = {
+            "Total Volume (per workout)": "total_volume",
+            "Total Reps (per workout)": "total_reps"
+        }
+        
+        graph_columns_filtered = st.columns(2)
+        for m, metric in enumerate(metric_to_column_filtered.keys()):
+            col_index = m % 2
+            col = graph_columns_filtered[col_index]
+            chart = alt.Chart(
+                filtered_data_agg, 
+                title=f"{metric} for {selected_exercise if selected_exercise != 'All' else 'All Exercises'} "
+                      f"in {selected_workout if selected_workout != 'All' else 'All Workouts'}"
+            ).mark_line(point=True).encode(
+                x=alt.X("date", title="Date"),
+                y=alt.Y(metric_to_column_filtered[metric], title=metric),
+            )
+            chart += chart.transform_regression('date', metric_to_column_filtered[metric]).mark_line(color="red")
+            col.altair_chart(chart, use_container_width=True)
+    else:
+        st.warning("No data available for the selected combination of exercise and workout.")
+    
     # Reset update-triggers in session state to False.
-    # Needs to be at the very end as it otherwise overrides session state 
-    # entries set by callback functions.
-    # (see here: https://blog.streamlit.io/session-state-for-streamlit/)
     init_session_state_updates()
