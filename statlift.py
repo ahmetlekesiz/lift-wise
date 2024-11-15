@@ -32,11 +32,11 @@ def show_total_stats(data: pd.DataFrame) -> None:
 if __name__ == "__main__":
     # setup page
     st.set_page_config(
-        page_title="StatLift",
+        page_title="LiftWise",
         page_icon=":mechanical_arm",
         layout="wide"
     )
-    st.title("StatLift - Free Analytics for Hevy Data :rocket:")
+    st.title("LiftWise - Free Analytics for Hevy Data :rocket:")
 
     # initialize workout data handler
     sepump = SePump()
@@ -56,11 +56,7 @@ if __name__ == "__main__":
         try:
             sepump.load_column_names(columns_path)
         except Exception:
-            st.error(
-                "Seems like your language is not supported by StatLift. \
-                Currently supported languages: English & German. \
-                If you want your language to be added to StatLift, please open an issue on GitHub: \n \n \
-                https://github.com/jjaju/statlift/issues")
+            st.error("Seems like your file is not supported by LiftWise")
             exit()
         sepump.clean_data()
         st.session_state["cleaned_data"] = sepump.data
