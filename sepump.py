@@ -74,8 +74,13 @@ class SePump:
         except Exception:
             pass
         try:
-            _ = data["start_time"]
-            return column_definitions["HEVY"]
+            _ = data["weight_kg"]
+            return column_definitions["HEVY_KG"]
+        except Exception:
+            pass
+        try:
+            _ = data["weight_lbs"]
+            return column_definitions["HEVY_LBS"]
         except Exception:
             pass
         
