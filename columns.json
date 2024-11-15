@@ -86,5 +86,19 @@
         "NOTES": "exercise_notes",
         "WORKOUT_NOTES": "description",
         "WORKOUT_DURATION": "duration_seconds"
+    },
+    "HEVY_LBS_MILES": {
+        "START_TIME": "start_time",
+        "END_TIME": "end_time",
+        "WORKOUT_NAME": "title",
+        "EXERCISE_NAME": "exercise_title",
+        "WEIGHT": "weight_lbs",
+        "REPS": "reps",
+        "RPE": "rpe",
+        "DISTANCE": "distance_miles",
+        "SECONDS": "duration_seconds",
+        "NOTES": "exercise_notes",
+        "WORKOUT_NOTES": "description",
+        "WORKOUT_DURATION": "duration_seconds"
     }
 }

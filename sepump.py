@@ -83,7 +83,12 @@ class SePump:
             return column_definitions["HEVY_LBS"]
         except Exception:
             pass
-        
+        try:
+            _ = data["distance_miles"]
+            return column_definitions["HEVY_LBS_MILES"]
+        except Exception:
+            pass
+
         raise Exception("Language of data not supported.")
 
     def clean_data(self) -> None:
