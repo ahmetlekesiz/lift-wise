@@ -177,7 +177,7 @@ class SePump:
                 metric_prev = metric
         elif aggregation == "sum":
             metric = self.exercise_data[column].sum()
-            if self.prev_exercise_data[column].sum() is not np.NaN:
+            if self.prev_exercise_data[column].sum() is not np.nan:
                 metric_prev = self.prev_exercise_data[column].sum()
             else:
                 metric_prev = metric
