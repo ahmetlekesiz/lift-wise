@@ -42,3 +42,4 @@ tzlocal==4.3
 urllib3==1.26.15
 validators==0.20.0
 zipp==3.15.0
+beautifulsoup4==4.12.3

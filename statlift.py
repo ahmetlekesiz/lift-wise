@@ -6,6 +6,10 @@ from session_state_handler import init_session_state_updates, on_csv_upload, \
     on_date_change, on_exercise_change, on_workout_change
 from sepump import SePump
 from streamlit_utils import v_space
+from bs4 import BeautifulSoup
+import shutil
+import pathlib
+import logging
 
 def show_total_stats(data: pd.DataFrame) -> None:
     """Shows aggregated metrics across all workouts and exercises in data.
@@ -28,39 +32,47 @@ def show_total_stats(data: pd.DataFrame) -> None:
     cl4.metric(label="\# of Reps", value="{:,}".format(int(total_reps)))
     cl5.metric(label="\# of Minutes trained", value="{:,}".format(int(total_duration)))
 
+def add_analytics_tag():    
+    GA_TRACKING_ID = st.secrets["google_analytics"]["GA_TRACKING_ID"]
+
+    analytics_js = """
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{GA_TRACKING_ID}');
+    </script>
+    <div id="{GA_TRACKING_ID}"></div>
+    """
+    
+    # Identify html path of streamlit
+    index_path = pathlib.Path(st.__file__).parent / "static" / "index.html"
+    logging.info(f'editing {index_path}')
+    soup = BeautifulSoup(index_path.read_text(), features="html.parser")
+    if not soup.find(id=GA_TRACKING_ID): # if id not found within html file
+        bck_index = index_path.with_suffix('.bck')
+        if bck_index.exists():
+            shutil.copy(bck_index, index_path)  # backup recovery
+        else:
+            shutil.copy(index_path, bck_index)  # save backup
+        html = str(soup)
+        new_html = html.replace('<head>', '<head>\n' + analytics_js) 
+        index_path.write_text(new_html) # insert analytics tag at top of head
 
 if __name__ == "__main__":
-    # setup page
+    # Setup Google Analytics
+    add_analytics_tag()
+
+    # Setup Streamlit
     st.set_page_config(
         page_title="LiftWise",
         page_icon=":mechanical_arm",
         layout="wide"
     )
     st.title("LiftWise (Beta) - Free Analytics for Hevy Data :rocket:")
-
-    # Google Analytics
-    GA_TRACKING_ID = st.secrets["google_analytics"]["GA_TRACKING_ID"]
     
-    # Create the GA tracking code using streamlit's built-in components
-    ga_script = f"""
-        <script>
-            // Create a new script element
-            var script = document.createElement('script');
-            script.src = 'https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}';
-            script.async = true;
-            document.head.appendChild(script);
-            
-            // Initialize dataLayer and gtag function
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){{dataLayer.push(arguments);}}
-            gtag('js', new Date());
-            gtag('config', '{GA_TRACKING_ID}');
-        </script>
-    """
-    
-    # Inject the script using a custom component
-    st.components.v1.html(ga_script, height=0)
-
     # initialize workout data handler
     sepump = SePump()
 
