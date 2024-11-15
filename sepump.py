@@ -89,7 +89,7 @@ class SePump:
         except Exception:
             pass
 
-        raise Exception("Language of data not supported.")
+        raise Exception("Input columns are not supported.")
 
     def clean_data(self) -> None:
         """Performs initial data cleaning of given workout data."""
