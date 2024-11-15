@@ -38,7 +38,7 @@ if __name__ == "__main__":
     )
     st.title("LiftWise - Free Analytics for Hevy Data :rocket:")
 
-    GA_TRACKING_ID = st.secrets["google_analytics"]["tracking_id"]
+    GA_TRACKING_ID = st.secrets["tracking_id"]
 
     # Inject Google Analytics script using the retrieved tracking ID
     ga_script = f"""
