@@ -42,18 +42,19 @@ if __name__ == "__main__":
     GA_TRACKING_ID = st.secrets["google_analytics"]["GA_TRACKING_ID"]
 
     ga_script = f"""
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){{dataLayer.push(arguments);}}
-    gtag('js', new Date());
-
-    gtag('config', '{GA_TRACKING_ID}');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GA_TRACKING_ID}', {{ 'cookie_flags': 'SameSite=None;Secure' }});
     </script>
     """
 
-    # Add the script to your Streamlit app
-    st.markdown(ga_script, unsafe_allow_html=True)
+    # Add the script to your Streamlit app using components.html
+    from streamlit.components.v1 import html
+    html(ga_script)
 
     # initialize workout data handler
     sepump = SePump()
