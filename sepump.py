@@ -97,7 +97,20 @@ class SePump:
 
         # Handle date columns for HEVY format
         if "start_time" in self.data.columns:
-            self.data["Date"] = pd.to_datetime(self.data["start_time"]).dt.date
+            # Drop rows with null start_time values
+            self.data = self.data.dropna(subset=["start_time"])
+            
+            try:
+                self.data["Date"] = pd.to_datetime(self.data["start_time"], 
+                                                 format='%Y-%m-%d %H:%M:%S', 
+                                                 errors='coerce').dt.date
+            except ValueError:
+                # If the above fails, try parsing without explicit format
+                self.data["Date"] = pd.to_datetime(self.data["start_time"], 
+                                                 errors='coerce').dt.date
+            
+            # Drop any rows where date conversion failed
+            self.data = self.data.dropna(subset=["Date"])
             self.columns["DATE"] = "Date"
 
         self.data = self.data[[
