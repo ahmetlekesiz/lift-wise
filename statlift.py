@@ -30,17 +30,13 @@ def show_total_stats(data: pd.DataFrame) -> None:
 
 
 if __name__ == "__main__":
-    # Enable wider access for analytics
-    #st.set_option('server.enableCORS', False)
-    #st.set_option('server.enableXsrfProtection', False)
-
     # setup page
     st.set_page_config(
         page_title="LiftWise",
         page_icon=":mechanical_arm",
         layout="wide"
     )
-    st.title("LiftWise - Free Analytics for Hevy Data :rocket:")
+    st.title("LiftWise (Beta) - Free Analytics for Hevy Data :rocket:")
 
     # Google Analytics
     GA_TRACKING_ID = st.secrets["google_analytics"]["GA_TRACKING_ID"]
