@@ -30,6 +30,10 @@ def show_total_stats(data: pd.DataFrame) -> None:
 
 
 if __name__ == "__main__":
+    # Enable wider access for analytics
+    #st.set_option('server.enableCORS', False)
+    #st.set_option('server.enableXsrfProtection', False)
+
     # setup page
     st.set_page_config(
         page_title="LiftWise",
@@ -40,21 +44,26 @@ if __name__ == "__main__":
 
     # Google Analytics
     GA_TRACKING_ID = st.secrets["google_analytics"]["GA_TRACKING_ID"]
-
+    
+    # Create the GA tracking code using streamlit's built-in components
     ga_script = f"""
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){{dataLayer.push(arguments);}}
-        gtag('js', new Date());
-        gtag('config', '{GA_TRACKING_ID}', {{ 'cookie_flags': 'SameSite=None;Secure' }});
-    </script>
+        <script>
+            // Create a new script element
+            var script = document.createElement('script');
+            script.src = 'https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}';
+            script.async = true;
+            document.head.appendChild(script);
+            
+            // Initialize dataLayer and gtag function
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){{dataLayer.push(arguments);}}
+            gtag('js', new Date());
+            gtag('config', '{GA_TRACKING_ID}');
+        </script>
     """
-
-    # Add the script to your Streamlit app using components.html
-    from streamlit.components.v1 import html
-    html(ga_script)
+    
+    # Inject the script using a custom component
+    st.components.v1.html(ga_script, height=0)
 
     # initialize workout data handler
     sepump = SePump()
