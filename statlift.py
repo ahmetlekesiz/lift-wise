@@ -31,8 +31,8 @@ def show_total_stats(data: pd.DataFrame) -> None:
 
 if __name__ == "__main__":
     # Enable wider access for analytics
-    st.set_option('server.enableCORS', False)
-    st.set_option('server.enableXsrfProtection', False)
+    #st.set_option('server.enableCORS', False)
+    #st.set_option('server.enableXsrfProtection', False)
 
     # setup page
     st.set_page_config(
