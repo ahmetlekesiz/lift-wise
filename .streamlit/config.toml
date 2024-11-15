@@ -1,2 +1,6 @@
 [browser]
 gatherUsageStats = false
+
+[server]
+enableCORS = false
+enableXsrfProtection = false
