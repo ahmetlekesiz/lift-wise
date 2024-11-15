@@ -171,7 +171,7 @@ class SePump:
         """
         if aggregation == "max":
             metric = self.exercise_data[column].max()
-            if self.prev_exercise_data[column].max() is not np.NaN:
+            if self.prev_exercise_data[column].max() is not np.nan:
                 metric_prev = self.prev_exercise_data[column].max()
             else:
                 metric_prev = metric
