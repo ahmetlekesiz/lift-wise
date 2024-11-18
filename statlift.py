@@ -7,7 +7,7 @@ from session_state_handler import init_session_state_updates, on_csv_upload, \
 from sepump import SePump
 from streamlit_utils import v_space
 
-def show_total_stats(data: pd.DataFrame) -> None:
+def show_total_stats(data: pd.DataFrame, weight_metric: str) -> None:
     """Shows aggregated metrics across all workouts and exercises in data.
 
     Args:
@@ -23,11 +23,21 @@ def show_total_stats(data: pd.DataFrame) -> None:
     total_duration = duration_data["duration"].fillna(0).sum()
     cl1, cl2, cl3, cl4, cl5 = st.columns(5)
     cl1.metric(label="\# of Workouts", value="{:,}".format(int(total_workouts)))
-    cl2.metric(label="Total Volume (kg)", value="{:,}".format(int(total_volume)))
+    cl2.metric(label=f"Total Volume ({weight_metric})", value="{:,}".format(int(total_volume)))
     cl3.metric(label="\# of Sets", value="{:,}".format(int(total_sets)))
     cl4.metric(label="\# of Reps", value="{:,}".format(int(total_reps)))
     cl5.metric(label="\# of Minutes trained", value="{:,}".format(int(total_duration)))
 
+def get_metrics_from_df(columns: str):
+    weight_metric = "kg" if "kg" in columns.lower() else "lbs"
+    distance_metric = "miles" if "miles" in columns.lower() else "km"
+
+    metrics = {
+        "weight_metric": weight_metric,
+        "distance_metric": distance_metric
+    }
+
+    return metrics
 
 if __name__ == "__main__":
     # setup page
@@ -91,6 +101,11 @@ if __name__ == "__main__":
         sepump.data = st.session_state["data"]
         sepump.columns = st.session_state["columns"]
 
+    # Metrics
+    metrics = get_metrics_from_df(str(sepump.columns))
+    weight_metric = metrics["weight_metric"]
+    distance_metric = metrics["distance_metric"]
+
     st.divider()
     
     # set date range
@@ -124,7 +139,7 @@ if __name__ == "__main__":
 
     st.divider()
     st.write("## :bar_chart: Metrics across all workouts:")
-    show_total_stats(st.session_state["data"])
+    show_total_stats(st.session_state["data"], weight_metric)
 
     ###########################################################################
     # 2. Metrics and graphs for individual exercises
@@ -161,10 +176,10 @@ if __name__ == "__main__":
     ecl1, ecl2, ecl3 = st.columns(3)
     ecl1.metric(label="Total Sets", value=total_sets, delta=total_sets_delta)
     ecl2.metric(label="Total Reps", value=total_reps, delta=total_reps_delta)
-    ecl3.metric(label="Total Volume (kg)", value=total_volume, delta=total_volume_delta)
-    ecl1.metric(label="Max Weight (kg)", value=max_weight, delta=max_weight_delta)
+    ecl3.metric(label=f"Total Volume ({weight_metric})", value=total_volume, delta=total_volume_delta)
+    ecl1.metric(label=f"Max Weight ({weight_metric})", value=max_weight, delta=max_weight_delta)
     ecl2.metric(label="Max Reps", value=max_reps, delta=max_reps_delta)
-    ecl3.metric(label="Max Volume (kg)", value=max_volume, delta=max_volume_delta)
+    ecl3.metric(label=f"Max Volume ({weight_metric})", value=max_volume, delta=max_volume_delta)
 
     # 2b. Graphs
     v_space(1)
@@ -223,7 +238,7 @@ if __name__ == "__main__":
     # 3a. Metrics
     v_space(1)
     st.write(f"##### :bar_chart: Metrics for workout routine *{workout_filter}*:")
-    show_total_stats(st.session_state["workout_data"])
+    show_total_stats(st.session_state["workout_data"], weight_metric)
 
     # 3b. Graphs
     v_space(1)
@@ -280,7 +295,7 @@ if __name__ == "__main__":
     if len(filtered_data) > 0:
         v_space(1)
         st.write("##### :bar_chart: Metrics for filtered data:")
-        show_total_stats(filtered_data)
+        show_total_stats(filtered_data, weight_metric)
 
         # Add graphs for filtered data
         v_space(1)
